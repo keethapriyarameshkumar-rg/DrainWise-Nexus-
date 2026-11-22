@@ -45,13 +45,33 @@ drains = pd.DataFrame({
     "Crew_Hours": [3, 2, 4, 2, 3]
 })
 
-# Transparent illustrative scenario score, not a trained prediction model.
-drains["Risk_Score"] = (
+# Initial illustrative risk calculation
+drains["Base_Risk"] = (
     0.40 * water_level
     + 0.30 * rainfall / 2
     + 0.30 * drains["Baseline_Level"]
 ).clip(0, 100)
 
+# Network-aware upstream risk propagation
+drains["Risk_Score"] = drains["Base_Risk"].copy()
+
+for _ in range(3):
+    updated_scores = drains["Risk_Score"].copy()
+
+    for index, row in drains.iterrows():
+        upstream_segments = drains[
+            drains["To"] == row["From"]
+        ]
+
+        if not upstream_segments.empty:
+            upstream_risk = upstream_segments["Risk_Score"].max()
+
+            updated_scores.loc[index] = min(
+                100,
+                0.75 * row["Base_Risk"] + 0.25 * upstream_risk
+            )
+
+    drains["Risk_Score"] = updated_scores
 def classify_risk(score):
     if score >= 75:
         return "Critical"
