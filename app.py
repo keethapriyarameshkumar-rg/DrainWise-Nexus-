@@ -441,36 +441,33 @@ st.write(
 
 st.subheader("Recommended Cleaning Priorities")
 
-
 if crews == 0:
-
     st.warning(
         "No cleaning crews are marked available. "
         "Priority segments are shown for planning only."
     )
 
 else:
+    selected = drains.head(crews).copy()
 
-    selected = drains.head(crews)
-selected = selected.copy()
+    def explain_priority(row):
+        reasons = []
 
-def explain_priority(row):
-    reasons = []
+        if row["Risk"] == "Critical":
+            reasons.append("Critical drainage risk")
+        elif row["Risk"] == "High":
+            reasons.append("High drainage risk")
 
-    if row["Risk"] == "Critical":
-        reasons.append("Critical drainage risk")
-    elif row["Risk"] == "High":
-        reasons.append("High drainage risk")
+        if row["Downstream_Hotspots"] > 0:
+            reasons.append(
+                f"Affects {int(row['Downstream_Hotspots'])} downstream hotspots"
+            )
 
-    if row["Downstream_Hotspots"] > 0:
-        reasons.append(
-            f"Affects {int(row['Downstream_Hotspots'])} downstream hotspots"
-        )
+        return "; ".join(reasons) if reasons else "Priority based on network score"
 
-    return "; ".join(reasons) if reasons else "Priority based on network score"
+    selected["Priority_Reason"] = selected.apply(explain_priority, axis=1)
 
-selected["Priority_Reason"] = selected.apply(explain_priority, axis=1)
-assignments = selected[[
+    assignments = selected[[
         "Segment",
         "From",
         "To",
@@ -501,6 +498,7 @@ assignments = selected[[
         use_container_width=True,
         hide_index=True
     )
+        
 
     st.success(
         f"{len(selected)} priority segment(s) listed "
