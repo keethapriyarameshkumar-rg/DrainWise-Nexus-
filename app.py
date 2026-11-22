@@ -604,6 +604,51 @@ st.caption(
     "Alerts are generated from simulated prototype risk scores. "
     "They are not official MCG warnings."
 )
+# Resource Readiness Analysis
+st.header("🛠️ Resource Readiness Analysis")
+
+critical_count = (drains["Risk"] == "Critical").sum()
+high_count = (drains["Risk"] == "High").sum()
+
+priority_count = critical_count + high_count
+
+st.subheader("Available Resources")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.metric("Priority Segments", priority_count)
+
+with col2:
+    st.metric("Cleaning Crews", crews)
+
+with col3:
+    st.metric("Available Pumps", pumps)
+
+crew_gap = max(0, priority_count - crews)
+pump_gap = max(0, priority_count - pumps)
+
+st.subheader("Resource Gap Assessment")
+
+if crew_gap > 0:
+    st.warning(
+        f"Potential crew coverage gap: {crew_gap} priority segment(s)."
+    )
+else:
+    st.success("Available crews match or exceed the priority segment count.")
+
+if pump_gap > 0:
+    st.warning(
+        f"Potential pump coverage gap: {pump_gap} priority segment(s)."
+    )
+else:
+    st.success("Available pumps match or exceed the priority segment count.")
+
+st.caption(
+    "This is a simplified resource comparison, not a validated staffing "
+    "or pump-capacity assessment. Actual requirements depend on field "
+    "conditions, equipment capacity and deployment time."
+)
 # Operations protocol
 st.header("📋 MCG Operations Protocol")
 
