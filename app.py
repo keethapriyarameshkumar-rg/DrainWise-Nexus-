@@ -316,7 +316,17 @@ for u, v, data in G.edges(data=True):
         arrowwidth=2,
         arrowcolor=color
     )
-
+    fig.add_annotation(
+        x=(x0 + x1) / 2,
+        y=(y0 + y1) / 2 + 0.18,
+        text=data["segment"],
+        showarrow=False,
+        font=dict(size=12, color="#FFFFFF"),
+        bgcolor="rgba(20,25,35,0.9)",
+        bordercolor=color,
+        borderwidth=1,
+        borderpad=3
+    )
 
 node_scores = {}
 
