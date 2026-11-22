@@ -452,7 +452,24 @@ if crews == 0:
 else:
 
     selected = drains.head(crews)
+selected = selected.copy()
 
+def explain_priority(row):
+    reasons = []
+
+    if row["Risk"] == "Critical":
+        reasons.append("Critical drainage risk")
+    elif row["Risk"] == "High":
+        reasons.append("High drainage risk")
+
+    if row["Downstream_Hotspots"] > 0:
+        reasons.append(
+            f"Affects {int(row['Downstream_Hotspots'])} downstream hotspots"
+        )
+
+    return "; ".join(reasons) if reasons else "Priority based on network score"
+
+selected["Priority_Reason"] = selected.apply(explain_priority, axis=1)
     assignments = selected[[
         "Segment",
         "From",
@@ -462,7 +479,8 @@ else:
         "Downstream_Hotspots",
         "Network_Importance",
         "Crew_Hours",
-        "Priority_Score"
+        "Priority_Score",
+        "Priority_Reason"
     ]].copy().rename(columns={
         "From": "Upstream",
         "To": "Downstream",
@@ -470,7 +488,8 @@ else:
         "Downstream_Hotspots": "Downstream Hotspots",
         "Network_Importance": "Network Importance",
         "Crew_Hours": "Estimated Crew-hours",
-        "Priority_Score": "Priority Score"
+        "Priority_Score": "Priority Score",
+        "Priority_Reason": "Priority Reason"
     })
 
     assignments["Priority Score"] = (
