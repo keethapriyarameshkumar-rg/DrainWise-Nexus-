@@ -386,7 +386,38 @@ st.caption(
     "D1: A→B  |  D2: B→C  |  D3: C→D  |  D4: D→F  |  D5: E→F"
 )
 
+# Network impact analysis
+st.header("🔗 Network Impact Analysis")
 
+impact_table = drains[[
+    "Segment",
+    "From",
+    "To",
+    "Downstream_Segments",
+    "Downstream_Hotspots",
+    "Network_Importance",
+    "Priority_Score"
+]].copy()
+
+impact_table["Downstream_Segments"] = impact_table["Downstream_Segments"].apply(
+    lambda segments: ", ".join(sorted(segments)) if segments else "None"
+)
+
+impact_table = impact_table.rename(columns={
+    "Downstream_Segments": "Connected Downstream Segments",
+    "Downstream_Hotspots": "Downstream Hotspots",
+    "Network_Importance": "Network Importance",
+    "Priority_Score": "Priority Score"
+})
+
+impact_table["Priority Score"] = impact_table["Priority Score"].round(1)
+
+st.dataframe(impact_table, use_container_width=True, hide_index=True)
+
+st.caption(
+    "Network connections and hotspot counts are illustrative "
+    "and require validation against verified MCG drainage maps."
+)
 # Resource allocation
 st.header("🛠️ MCG Resource Allocation")
 
