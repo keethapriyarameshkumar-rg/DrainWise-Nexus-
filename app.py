@@ -527,6 +527,29 @@ else:
         "and resource counts."
     )
 
+critical_count = (drains["Risk"] == "Critical").sum()
+high_count = (drains["Risk"] == "High").sum()
+moderate_count = (drains["Risk"] == "Moderate").sum()
+
+if critical_count >= 3:
+    scenario = "Critical preparedness"
+    guidance = "Multiple critical segments detected. Prioritize field verification and review crew and pump readiness."
+
+elif critical_count > 0:
+    scenario = "High preparedness"
+    guidance = "Critical segments detected. Review priority segments and confirm resource readiness."
+
+elif high_count > 0:
+    scenario = "Elevated preparedness"
+    guidance = "High-risk segments detected. Verify local readings and confirm crew and pump readiness."
+
+elif moderate_count > 0:
+    scenario = "Moderate preparedness"
+    guidance = "Monitor moderate-risk segments and review updated conditions."
+
+else:
+    scenario = "Normal preparedness"
+    guidance = "No elevated risk detected in this simulated scenario. Continue routine monitoring."
 
 st.metric("Scenario Status", scenario)
 st.write(guidance)
