@@ -569,7 +569,41 @@ st.caption(
     "forecast. It does not replace official IMD forecasts or field verification."
 )
 
+# Smart Alert System
+st.header("🚨 Smart Drainage Alerts")
 
+critical_drains = drains[drains["Risk"] == "Critical"]
+high_drains = drains[drains["Risk"] == "High"]
+
+if not critical_drains.empty:
+    st.error(
+        f"CRITICAL ALERT: {len(critical_drains)} drainage "
+        "segments require immediate field verification."
+    )
+
+    st.write(
+        "Affected segments:",
+        ", ".join(critical_drains["Segment"].tolist())
+    )
+
+elif not high_drains.empty:
+    st.warning(
+        f"HIGH RISK ALERT: {len(high_drains)} drainage "
+        "segments require closer monitoring."
+    )
+
+    st.write(
+        "Affected segments:",
+        ", ".join(high_drains["Segment"].tolist())
+    )
+
+else:
+    st.success("No Critical or High-risk segments in this simulated scenario.")
+
+st.caption(
+    "Alerts are generated from simulated prototype risk scores. "
+    "They are not official MCG warnings."
+)
 # Operations protocol
 st.header("📋 MCG Operations Protocol")
 
