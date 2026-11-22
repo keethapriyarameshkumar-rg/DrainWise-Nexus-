@@ -632,11 +632,15 @@ high_count = (drains["Risk"] == "High").sum()
 priority_count = critical_count + high_count
 
 st.subheader("Available Resources")
-
+st.caption(
+    "Resource readiness compares available crews and pumps "
+    "against Critical and High-risk segments only. "
+    "Resource Allocation separately ranks all segments."
+)
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.metric("Priority Segments", priority_count)
+    st.metric("Critical/High-risk Segments", priority_count)
 
 with col2:
     st.metric("Cleaning Crews", crews)
