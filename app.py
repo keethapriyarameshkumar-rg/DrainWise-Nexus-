@@ -470,7 +470,7 @@ def explain_priority(row):
     return "; ".join(reasons) if reasons else "Priority based on network score"
 
 selected["Priority_Reason"] = selected.apply(explain_priority, axis=1)
-    assignments = selected[[
+assignments = selected[[
         "Segment",
         "From",
         "To",
