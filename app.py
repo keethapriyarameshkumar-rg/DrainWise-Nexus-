@@ -379,9 +379,9 @@ for label, color in risk_colors.items():
 
 
 fig.update_layout(
-    title="Illustrative Drain Connectivity — Direction of Flow",
+    title="Drainage Flow & Risk Map",
     height=430,
-    margin=dict(l=10, r=10, t=55, b=10),
+margin=dict(l=10, r=10, t=85, b=20),
     paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="rgba(0,0,0,0)",
     font=dict(color="#EAECEF"),
