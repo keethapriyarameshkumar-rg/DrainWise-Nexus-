@@ -504,7 +504,8 @@ else:
         f"{len(selected)} priority segment(s) listed "
         f"for up to {crews} available crew(s)."
     )
-        crew_gap = max(0, len(drains) - len(selected))
+    
+    crew_gap = max(0, len(drains) - len(selected))
 
     if crew_gap > 0:
         st.warning(
