@@ -89,11 +89,53 @@ risk_colors = {
 }
 
 drains["Risk"] = drains["Risk_Score"].apply(classify_risk)
-drains["Priority_Score"] = (
-    drains["Risk_Score"] * drains["Hotspots_Protected"] / drains["Crew_Hours"]
-)
+
 drains["Color"] = drains["Risk"].map(risk_colors)
 drains = drains.sort_values("Priority_Score", ascending=False).reset_index(drop=True)
+# Calculate downstream network impact
+def get_downstream_segments(segment):
+    destination = drains.loc[
+        drains["Segment"] == segment, "To"
+    ].iloc[0]
+
+    downstream = drains[drains["From"] == destination]
+    result = set()
+
+    for _, row in downstream.iterrows():
+        if row["Segment"] not in result:
+            result.add(row["Segment"])
+            result.update(get_downstream_segments(row["Segment"]))
+
+    return result
+
+
+drains["Downstream_Segments"] = drains["Segment"].apply(
+    get_downstream_segments
+)
+
+drains["Downstream_Hotspots"] = drains.apply(
+    lambda row: sum(
+        drains.loc[
+            drains["Segment"].isin(row["Downstream_Segments"]),
+            "Hotspots_Protected"
+        ]
+    ),
+    axis=1
+)
+
+drains["Network_Importance"] = (
+    drains["Hotspots_Protected"] + drains["Downstream_Hotspots"]
+)
+
+drains["Priority_Score"] = (
+    drains["Risk_Score"]
+    * drains["Network_Importance"]
+    / drains["Crew_Hours"]
+)
+
+drains = drains.sort_values(
+    "Priority_Score", ascending=False
+).reset_index(drop=True)
 
 # Dashboard
 st.header("📊 Flood Monitoring Dashboard")
